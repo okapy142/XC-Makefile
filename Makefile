@@ -3,28 +3,32 @@ XC = "/opt/microchip/xc8/v1.37/bin/xc8"
 TARGET_DEVICE = 16F1938
 TARGET_DIR = bin
 TARGET_NAME = target
-TARGET = $(TARGET_DIR)/$(TARGET_NAME).elf
+TARGET = $(TARGET_DIR)/$(TARGET_NAME).hex
 
+# Source-file directory
 SRC_DIR = Src
 SRC = $(wildcard $(SRC_DIR)/*.c)
 
+# Header-file directory
 INCLUDE_DIR = Inc
 INCLUDE = $(wildcard $(INCLUDE_DIR)/*.h)
 
+# Object-file directory
 OBJ_DIR = obj
 OBJ = $(addprefix $(OBJ_DIR)/,$(notdir $(SRC:%.c=%.p1)))
 
-XC_COMPILE_OPTIONS = --pass1  --chip=$(TARGET_DEVICE) -Q -G  --double=24 --float=24 --opt=default,+asm,+asmfile,-speed,+space,-debug --addrqual=ignore --mode=free -P -N255 --warn=-3 --asmlist --summary=default,-psect,-class,+mem,-hex,-file --output=default,-inhx032 --runtime=default,+clear,+init,-keep,-no_startup,-osccal,-resetbits,-download,-stackcall,+clib   --output=-mcof,+elf:multilocs --stack=compiled:auto:auto "--errformat=%f:%l: error: (%n) %s" "--warnformat=%f:%l: warning: (%n) %s" "--msgformat=%f:%l: advisory: (%n) %s"
+# Warning levl
+WARN_LEVEL = -3
 
-XC_LINK_OPTIONS = --chip=$(TARGET_DEVICE) -G --double=24 --float=24 --opt=default,+asm,+asmfile,-speed,+space,-debug --addrqual=ignore --mode=free -P -N255 --warn=-3 --asmlist --summary=default,-psect,-class,+mem,-hex,-file --output=default,-inhx032 --runtime=default,+clear,+init,-keep,-no_startup,-osccal,-resetbits,-download,-stackcall,+clib --output=-mcof,+elf:multilocs --stack=compiled:auto:auto "--errformat=%f:%l: error: (%n) %s" "--warnformat=%f:%l: warning: (%n) %s" "--msgformat=%f:%l: advisory: (%n) %s"
+XC_COMPILE_OPTIONS = --pass1 --chip=$(TARGET_DEVICE) -I$(INCLUDE_DIR) -Q -P --asmlist --opt=default --addrqual=ignore
+XC_LINK_OPTIONS = --chip=$(TARGET_DEVICE) --warn=$(WARN_LEVEL) --runtime=default,-keep,-osccal --output=default,-inhx032 --summary=default
 
 .PHONY:					all clean
 
 all:					$(TARGET)
 
 clean:	
-	rm -rf $(OBJ_DIR)
-	rm -rf $(TARGET_DIR)
+	rm -rf $(TARGET_DIR) $(OBJ_DIR)
 	
 # Build step: Compile
 $(OBJ_DIR)/%.p1:		$(SRC_DIR)/%.c $(INCLUDE)
