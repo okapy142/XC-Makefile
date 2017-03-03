@@ -23,19 +23,19 @@ WARN_LEVEL = -3
 XC_COMPILE_OPTIONS = --pass1 --chip=$(TARGET_DEVICE) -I$(INCLUDE_DIR) -Q -P --asmlist --opt=default --addrqual=ignore
 XC_LINK_OPTIONS = --chip=$(TARGET_DEVICE) --warn=$(WARN_LEVEL) --runtime=default,-keep,-osccal --output=default,-inhx032 --summary=default
 
-.PHONY:					all clean
+.PHONY: all clean
 
-all:					$(TARGET)
+all:  $(TARGET)
 
-clean:	
+clean:
 	rm -rf $(TARGET_DIR) $(OBJ_DIR)
-	
+
 # Build step: Compile
-$(OBJ_DIR)/%.p1:		$(SRC_DIR)/%.c $(INCLUDE)
+$(OBJ_DIR)/%.p1:  $(SRC_DIR)/%.c $(INCLUDE)
 	mkdir -p $(OBJ_DIR)
 	$(XC) $(XC_COMPILE_OPTIONS) -o$@ $<
 
 # Build step: Link
-$(TARGET):				$(OBJ)
+$(TARGET):  $(OBJ)
 	mkdir -p $(TARGET_DIR)
 	$(XC) $(XC_LINK_OPTIONS) -o$@ $^
